@@ -1,5 +1,5 @@
 {
-  "name": "tkm-op",
+  "name": "tmbundle",
   "version": "0.0.1",
   "main": "webpack.config.js",
   "engines": {
