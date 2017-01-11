@@ -8,7 +8,7 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "build": "webpack --progress --profile --bail",
-    "startWeb": "webpack-dev-server --port 80 --content-base --inline --hot",
+    "startWeb": "webpack-dev-server --content-base --inline --hot",
     "test": "jest"
   },
   "dependencies": {
