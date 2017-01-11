@@ -2,10 +2,13 @@
   "name": "tkm-op",
   "version": "0.0.1",
   "main": "webpack.config.js",
+  "engines": {
+    "node": "6.9.4"
+  },
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "build": "webpack --progress --profile --bail",
-    "startWeb": "webpack-dev-server --port 8082 --content-base --inline --hot --host=0.0.0.0",
+    "startWeb": "webpack-dev-server --port 80 --content-base --inline --hot",
     "test": "jest"
   },
   "dependencies": {
@@ -50,5 +53,9 @@
   },
   "jest": {
     "preset": "react-native"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/degratnik/tmbundle"
   }
 }

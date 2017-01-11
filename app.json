@@ -1,0 +1,8 @@
+{
+  "name": "TM bundle",
+  "description": "Get big bundle of things with an event.",
+  "repository": "https://github.com/degratnik/tmbundle",
+  "logo": "http://node-js-sample.herokuapp.com/node.svg",
+  "keywords": ["node"],
+  "image": "heroku/nodejs"
+}
