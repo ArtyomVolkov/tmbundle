@@ -1,4 +1,4 @@
-rootProject.name = 'AwesomeProject'
+rootProject.name = 'TKM-OP'
 
 include ':app'
 include ':react-native-vector-icons'
