@@ -6,23 +6,21 @@ import {View, Text, StyleSheet, Alert} from 'react-native';
 
 const style = StyleSheet.create({
 	content: {
-		margin: 5,
-		borderWidth: 1,
-		borderColor: '#a7a7a7',
-		borderStyle: 'solid'
+	  marginTop: 20
 	},
 	body: {
 		padding: 0
 	},
+  header: {
+	  borderBottomWidth: 1,
+    borderColor: '#b7c9d3'
+  },
 	title: {
-		color: 'black',
+		color: '#b7c9d3',
 		fontSize: 16,
-		paddingLeft: 10,
 		fontWeight: 'bold',
 		borderBottomWidth: 1,
-		paddingBottom: 5,
-		borderColor: '#a7a7a7',
-		borderStyle: 'solid'
+		paddingBottom: 5
 	}
 });
 class EventWidget extends  Component {

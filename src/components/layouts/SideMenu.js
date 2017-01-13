@@ -15,10 +15,11 @@ const style = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'flex-start',
 		alignItems: 'center',
-		margin: 5
+		marginTop: 15
 	},
 	title: {
-		textAlign: 'right'
+		textAlign: 'right',
+		marginRight: 5
 	},
 	resetBtn: {
 		maxWidth: 80

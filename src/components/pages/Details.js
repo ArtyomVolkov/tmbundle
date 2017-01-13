@@ -2,11 +2,12 @@
  * Created by Artem_Volkov on 20-Dec-16.
  */
 import React, {Component} from 'react';
-import {View, Text, ScrollView, Image, StyleSheet, Alert} from 'react-native';
+import {View, Text, ScrollView, Image, StyleSheet, TouchableHighlight, Alert} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Spinner from 'react-native-loading-spinner-overlay';
 // components
 import EventWidget from './../widgets/EventWidget';
+import Button from './../custom/buttons/Button';
 // Actions
 import {getFlightAir, getHotelInfo, getCarRental} from '../../actions/apis';
 import STORE from './../../store/index';
@@ -18,19 +19,31 @@ import {readData} from './../../utils/common';
 import COMMON from './../../mobileStyles/common';
 const style = StyleSheet.create({
 	content: {
-		marginTop: 55
+		marginTop: 55,
+		padding: 10
 	},
 	title: {
-		textAlign: 'center',
-		fontSize: 18,
-		color: 'black',
+		fontSize: 24,
 		fontWeight: 'bold',
-		marginTop: 10
+		color: '#414141',
+		marginTop: 20,
+		marginBottom: 20
 	},
+	eventImg: {
+		width: 350,
+		height: 300,
+		borderWidth: 1,
+		borderColor: '#dcdcdc'
+	},
+  price: {
+	  fontWeight: 'bold',
+    color: '#b7c9d3'
+  },
 	itemRow: {
 		justifyContent: 'flex-start',
+    marginBottom: 20,
 		flexDirection: 'row',
-		alignItems: 'center'
+		alignItems: 'flex-start'
 	},
 	itemTitle: {
 		fontSize: 14,
@@ -56,7 +69,8 @@ const style = StyleSheet.create({
 		fontWeight: 'bold'
 	},
 	description: {
-		fontSize: 14
+		fontSize: 16,
+		color: '#768692'
 	},
 	eventTitleRow: {
 		fontWeight: 'bold',
@@ -145,40 +159,43 @@ class Details extends Component {
 		const {flight} = this.state;
 
 		return (
-			<EventWidget title={'Flight Ticket'}>
+			<EventWidget title={'FLIGHT TICKETS'}>
 				{
 					flight.legs.map((detail, index) => {
 						return (
 							<View key={index} style={[COMMON.row, COMMON.separator]}>
-								<View style={COMMON.mrgR5}>
-									{this.renderImage(style.image, 'https://pbs.twimg.com/profile_images/635867807981379584/sA1V-rRi_400x400.jpg')}
-									<View style={[style.itemRow, {justifyContent: 'center'}]}>
-										<Text style={COMMON.fs12}>
-											{detail.segments[0].departureAirportCode} - {detail.segments[0].arrivalAirportCode}
-										</Text>
-									</View>
-								</View>
 								<View style={{flex: 1}}>
+                  <View style={style.itemRow}>
+                    <Icon name="clock-o" size={20} color="#b7c9d3" style={COMMON.mrgR20} />
+                    <View style={{flex: 1}}>
+                      <Text style={[COMMON.dateTime, COMMON.mrgB10, {flex: 1}]}>{detail.segments[0].departureTime}</Text>
+                      <Text style={[COMMON.dateTime, {flex: 1}]}>{detail.segments[0].arrivalTime}</Text>
+                    </View>
+                  </View>
+                  <View style={style.itemRow}>
+                    <Icon name="plane" size={20} color="#b7c9d3" style={COMMON.mrgR20} />
+                    <View style={{flex: 1}}>
+                      <Text ellipsizeMode='tail' numberOfLines={2} style={[COMMON.mrgB10, style.description, {flex: 1}]}>
+                        {detail.segments[0].departureAirportAddress.city + ` (${detail.segments[0].departureAirportCode}) - ` +
+                        detail.segments[0].arrivalAirportAddress.city + ` (${detail.segments[0].arrivalAirportCode})`}
+                      </Text>
+                      <Text style={COMMON.text}>Flight Number: <Text style={COMMON.value}>{detail.segments[0].flightNumber}</Text></Text>
+                      <Text style={COMMON.text}>Plane: <Text style={COMMON.value}>{detail.segments[0].equipmentDescription}</Text></Text>
+                      <Text style={COMMON.text}>Duration: <Text style={COMMON.value}>{detail.segments[0].duration}</Text></Text>
+                    </View>
+                  </View>
 									<View style={style.itemRow}>
-										<Text style={style.itemTitle} ellipsizeMode="middle" numberOfLines={1}>
-											{`${detail.segments[0].departureAirportAddress.city} - ${detail.segments[0].arrivalAirportAddress.city}`}
-										</Text>
+                    <Icon name="ticket" size={20} color="#b7c9d3" style={COMMON.mrgR20} />
+                    <Text style={style.price}>PRICE (per person)</Text>
 									</View>
-									<View style={style.itemRow}>
-										<Text style={style.subTitle} ellipsizeMode="tail" numberOfLines={2}>
-											{detail.segments[0].departureTime + ' - ' + detail.segments[0].arrivalTime}
-										</Text>
-									</View>
-									<View style={style.itemRow}>
-										<Icon name="plane" size={12} color="black" style={COMMON.mrgR5} />
-										<Text style={[COMMON.mrgR5, COMMON.subTitle, {color: 'black'}]} ellipsizeMode="tail" numberOfLines={2}>
-											{detail.segments[0].duration + ' | ' + detail.segments[0].equipmentDescription + ' №' + detail.segments[0].flightNumber}
-										</Text>
-									</View>
-									<View style={style.itemRow}>
-										<Text style={COMMON.price}>{flight.offers[index].totalFarePrice.formattedPrice}</Text>
-										<Text style={{fontSize: 12, fontWeight: 'bold'}}>(per passenger)</Text>
-									</View>
+                  <View style={[style.itemRow, {justifyContent: 'center'}]}>
+                    <Text style={COMMON.price}>{flight.offers[index].totalFarePrice.formattedPrice}</Text>
+                  </View>
+                  <View style={[style.itemRow, {justifyContent: 'center'}]}>
+                    <View style={{flex: 1}}>
+                      <Button title="BUY A TICKET" onPress={null}/>
+                    </View>
+                  </View>
 								</View>
 							</View>
 						)
@@ -192,7 +209,7 @@ class Details extends Component {
 		const {hotels} = this.state;
 
 		return (
-			<EventWidget title={'Hotel Reserve'}>
+			<EventWidget title={'HOTEL RESERVATION'}>
 				{
 					hotels.map((hotel, index) => {
 						return (
@@ -231,7 +248,7 @@ class Details extends Component {
 		const {cars} = this.state;
 
 		return (
-			<EventWidget title={'Car Rental'}>
+			<EventWidget title={'CAR RENTAL'}>
 				{
 					cars.map((car, index) => {
 						return (
@@ -288,30 +305,30 @@ class Details extends Component {
 		return (
 			<ScrollView style={style.content}>
 				<Spinner visible={activeSpinner} />
-
-				<View>
-					<Image style={{width: 360, height: 300}} source={{uri: images[images.length -1].url}} />
-				</View>
-
-				<Text style={style.title}>{event.name}</Text>
+				<Text style={style.title} ellipsizeMode='tail' numberOfLines={2}>
+					{event.name}
+				</Text>
 				<View style={COMMON.row}>
-					<Text>{event.info || event.pleaseNote}</Text>
+					<Image style={[style.eventImg]} source={{uri: images[images.length -1].url}} />
 				</View>
-
-				{location.readable &&
 				<View style={COMMON.row}>
-					<Text style={style.eventTitleRow}>
-						{readData(location.value, 'country.name', String).value || N_A}
+					<Icon name="clock-o" size={20} color="#b7c9d3" style={COMMON.mrgR20} />
+					<Text style={COMMON.dateTime}>
+						{date.start.localDate + ' ' + date.start.localTime}
 					</Text>
-					<Text>
-						{readData(location.value, 'city.name', String).value || N_A
-						+ ' | ' + readData(location.value, 'address.line1', String).value || N_A}
+				</View>
+        {location.readable &&
+				<View style={COMMON.row}>
+					<Icon name="map-marker" size={20} color="#b7c9d3" style={COMMON.mrgR20} />
+					<Text ellipsizeMode='tail' numberOfLines={2} style={style.description}>
+            {readData(location.value, 'country.name', String).value || N_A
+							+ ' | ' + readData(location.value, 'city.name', String).value || N_A
+            	+ ' | ' + readData(location.value, 'address.line1', String).value || N_A
+            }
 					</Text>
 				</View>}
-
 				<View style={COMMON.row}>
-					<Text style={style.eventTitleRow}>Date</Text>
-					<Text>{date.start.localDate + ' ' + date.start.localTime}</Text>
+					<Text style={style.description}>{event.info || event.pleaseNote || 'No description of event'}</Text>
 				</View>
 				<View>
 					{flight && this.renderFlightDetails()}

@@ -7,12 +7,20 @@ const COMMON = StyleSheet.create({
 	title: {
 		fontSize: 16,
 		color: 'black',
+		marginBottom: 10,
 		fontWeight: 'bold'
 	},
 	subTitle: {
-		fontSize: 12,
-		color: 'gray',
-		fontWeight: 'bold'
+		fontSize: 14,
+		fontWeight: 'bold',
+    opacity: 0.7,
+		color: '#414141',
+    marginBottom: 5,
+	},
+	dateTime: {
+		color: '#768692',
+		fontWeight: 'bold',
+		fontSize: 16
 	},
 	rate: {
 		justifyContent: 'space-around',
@@ -22,9 +30,9 @@ const COMMON = StyleSheet.create({
 		paddingRight: 5
 	},
 	price: {
-		fontWeight: 'bold',
-		marginRight: 5,
-		color: '#0795be'
+    color: '#b7c9d3',
+    fontWeight: 'bold',
+    fontSize: 54
 	},
 	discount: {
 		color: '#06bf06',
@@ -33,23 +41,47 @@ const COMMON = StyleSheet.create({
 	},
 	separator: {
 		borderBottomWidth: 1,
-		borderColor: '#a7a7a7'
+		borderColor: '#b7c9d3'
 	},
 	row: {
 		flexDirection: 'row',
 		alignSelf: 'stretch',
 		justifyContent: 'flex-start',
-		alignItems: 'center',
-		padding: 4
+		alignItems: 'flex-start',
+		paddingTop: 10,
+		paddingBottom: 10,
+		paddingLeft: 2,
+		paddingRight: 2
 	},
 	itemRow: {
 		justifyContent: 'flex-start',
 		flexDirection: 'row',
 		alignItems: 'center'
 	},
+  text: {
+	  color: '#b7c9d3',
+    fontSize: 16,
+    marginBottom: 8
+  },
+  value: {
+	  color: '#768692',
+    fontSize: 16
+  },
 	mrgR5: {
 		marginRight: 5
 	},
+	mrgR20: {
+		marginRight: 20
+	},
+  mrgT20: {
+	  marginTop: 20
+  },
+  mrgB5: {
+	  marginBottom: 5
+  },
+  mrgB10: {
+	  marginBottom: 10
+  },
 	fs12: {
 		fontSize: 12
 	}

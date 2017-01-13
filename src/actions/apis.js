@@ -16,7 +16,24 @@ export function getEvents(searchTerm = '') {
 	return axios.get(EVENTS_API, {params});
 }
 
-export function getAirport(city = 'Toronto', country = 'Canada', countryCode = 'CA') {
+export function getTickets() {
+	const params = {
+		departureAirport: 'LAX',
+		arrivalAirport: 'WAS',
+		departureDate: '2017-01-29',
+		maxOfferCount: STORE.getState().options.flights,
+		apikey: EXPEDIA_API_KEY
+	};
+  fetch('http://terminal2.expedia.com/x/mflights/search?departureAirport=LAX&arrivalAirport=ORD&departureDate=2017-02-08&apikey=rxrUZKoPlSKZXN4PPZQfDgOK2dMRyG7Z')
+		.then((data) => {
+  		console.log(data);
+		}).catch((error) => {
+  		console.log('*****error*****');
+  		console.log(error);
+	});
+}
+
+function getAirport(city = 'Toronto', country = 'Canada', countryCode = 'CA') {
 	const params = {
 		city: city,
 		country: country,
