@@ -3,6 +3,7 @@
  */
 import React, {Component} from 'react';
 import {View, Text, ScrollView, Image, StyleSheet, TouchableHighlight, Alert} from 'react-native';
+import moment from 'moment';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Spinner from 'react-native-loading-spinner-overlay';
 // components
@@ -12,7 +13,7 @@ import Button from './../custom/buttons/Button';
 import {getFlightAir, getHotelInfo, getCarRental} from '../../actions/apis';
 import STORE from './../../store/index';
 // settings
-import {IMAGES_TRVL, N_A} from './../../settings';
+import {IMAGES_TRVL, N_A, DATE_SEARCH_FORMAT, TRIP_DAYS} from './../../settings';
 // utilities
 import {readData} from './../../utils/common';
 // styles
@@ -110,35 +111,33 @@ class Details extends Component {
 	}
 
 	getTravelData() {
-		return Promise.all([getFlightAir(), getHotelInfo(), getCarRental()]).then((responses) => {
-			let flightData = responses[0].data;
-			let hotelData = responses[1].data;
-			let carRental = responses[2].data;
+		const {event} = this.state;
+		const eventDate = event.dates.start.localDate;
+		const startDate = moment(eventDate).format(DATE_SEARCH_FORMAT);
+		const endDate = moment(+moment(eventDate) + (TRIP_DAYS * 24*60*60*1000)).format(DATE_SEARCH_FORMAT);
 
-			this.setState({
-				activeSpinner: false,
-				flight: {
-					offers: flightData['offers'],
-					legs: flightData['legs']
-				},
-				hotels: hotelData['hotelList'],
-				cars: (carRental['CarInfoList']['CarInfo']) instanceof Array
-					? carRental['CarInfoList']['CarInfo'] : [carRental['CarInfoList']['CarInfo']]
-			});
-		}).catch((error) => {
-			Alert.alert('Error', (error.message || 'Internal server error'));
-			this.setState({
-				activeSpinner: false
-			});
-		});
-	}
+		return Promise.all([getFlightAir(startDate), getHotelInfo(startDate, endDate), getCarRental(startDate, endDate)])
+			.then((responses) => {
+				let flightData = responses[0].data;
+				let hotelData = responses[1].data;
+				let carRental = responses[2].data;
 
-	onCheckUrl(urls) {
-		let validUrl;
-		
-		for (let i = 0; i < urls.length; i++) {
-			
-		}
+				this.setState({
+					activeSpinner: false,
+					flight: {
+						offers: flightData['offers'],
+						legs: flightData['legs']
+					},
+					hotels: hotelData['hotelList'],
+					cars: (carRental['CarInfoList']['CarInfo']) instanceof Array
+						? carRental['CarInfoList']['CarInfo'] : [carRental['CarInfoList']['CarInfo']]
+				});
+			}).catch((error) => {
+				Alert.alert('Error', (error.message || 'Internal server error'));
+				this.setState({
+					activeSpinner: false
+				});
+			});
 	}
 
 	renderImage(style = {}, url) {
