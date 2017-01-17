@@ -15,7 +15,7 @@ const COMMON = StyleSheet.create({
 		fontWeight: 'bold',
     opacity: 0.7,
 		color: '#414141',
-    marginBottom: 5,
+    marginBottom: 5
 	},
 	dateTime: {
 		color: '#768692',
@@ -23,11 +23,9 @@ const COMMON = StyleSheet.create({
 		fontSize: 16
 	},
 	rate: {
-		justifyContent: 'space-around',
+		justifyContent: 'flex-start',
 		flexDirection: 'row',
-		paddingTop: 5,
-		paddingLeft: 2,
-		paddingRight: 5
+		paddingTop: 15
 	},
 	price: {
     color: '#b7c9d3',
@@ -37,7 +35,7 @@ const COMMON = StyleSheet.create({
 	discount: {
 		color: '#06bf06',
 		fontWeight: 'bold',
-		marginLeft: 5
+		marginLeft: 15
 	},
 	separator: {
 		borderBottomWidth: 1,

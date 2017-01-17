@@ -14,12 +14,17 @@ export const GOOGLE_MAPS = 'http://maps.google.com/?q=';
 
 // API keys
 export const API_KEY = '08GmdRKC7W1GxALpDlGPHmIbfTGKyAwv';
-export const EXPEDIA_API_KEY = 'rxrUZKoPlSKZXN4PPZQfDgOK2dMRyG7Z';
+export const EXPEDIA_API_KEY = 'QII5m1ws5e8grab0p4DEAuwXNcASRFtp';
 
 // other
 export const RESULTS_LIMIT = 3;
+export const TRIP_DAYS = 3;
 export const EVENTS_COUNT = 20;
-export const FLIGHT_TICKETS = 1;
+export const FLIGHT_TICKETS = 2;
 export const HOTEL_RESULTS = 3;
 export const RENTAL_CARS = 3;
 export const N_A = 'N/A';
+
+// Date formats
+export const DATE_SEARCH_FORMAT = 'YYYY-MM-DD';
+export const DATE_DISPLAY_FORMAT = 'ddd, ll h:mm A';

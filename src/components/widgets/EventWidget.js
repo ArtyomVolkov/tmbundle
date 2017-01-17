@@ -13,13 +13,14 @@ const style = StyleSheet.create({
 	},
   header: {
 	  borderBottomWidth: 1,
-    borderColor: '#b7c9d3'
+		borderStyle: 'solid',
+    borderBottomColor: '#b7c9d3',
+		marginBottom: 15
   },
 	title: {
 		color: '#b7c9d3',
 		fontSize: 16,
 		fontWeight: 'bold',
-		borderBottomWidth: 1,
 		paddingBottom: 5
 	}
 });

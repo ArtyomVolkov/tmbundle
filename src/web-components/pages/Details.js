@@ -4,15 +4,17 @@
 import React, {Component} from 'react';
 import classNames from 'classnames';
 import {hashHistory} from 'react-router';
+import moment from 'moment';
 // store
 import STORE from '../../store/index';
 // components
 import Spinner from './../custom-components/spinner/Spinner';
 import EventWidget from './../custom-components/widgets/EventWidget';
+import Image from './../custom-components/Image/Image';
 // Actions
 import {getFlightAir, getHotelInfo, getCarRental} from '../../actions/apis';
 // settings
-import {RESULTS_LIMIT, IMAGES_TRVL, GOOGLE_MAPS} from './../../settings';
+import {RESULTS_LIMIT, IMAGES_TRVL, GOOGLE_MAPS, TRIP_DAYS, DATE_SEARCH_FORMAT} from './../../settings';
 // styles
 import * as STYLE from './../../styles/common.styl';
 import * as style from './Details.styl';
@@ -22,11 +24,19 @@ class Details extends Component {
 		super(props);
 		
 		const state = STORE.getState();
-
 		this.state = {
 			event: state.eventDetails,
-			activeSpinner: true,
-			flight: null,
+			spinners: {
+				flight: true,
+				hotel: true,
+				car: true
+			},
+			errors: {
+				flight: null,
+				hotel: null,
+				car: null
+			},
+			flights: null,
 			hotels: null,
 			cars: null
 		};
@@ -43,26 +53,99 @@ class Details extends Component {
 	}
 
 	getTravelData =()=> {
-		return Promise.all([getFlightAir(), getHotelInfo(), getCarRental()]).then((responses) => {
-			let flightData = responses[0].data;
-			let hotelData = responses[1].data;
-			let carRental = responses[2].data;
+		const {event, spinners, errors} = this.state;
+		const eventDate = event.dates.start.localDate;
+		const startDate = moment(eventDate).format(DATE_SEARCH_FORMAT);
+		const endDate = moment(+moment(eventDate) + (TRIP_DAYS * 24*60*60*1000)).format(DATE_SEARCH_FORMAT);
+
+		getFlightAir(startDate).then((response) => {
+			let flightData = response.data;
+			let flightErrors = response.data.errors;
+
+			spinners.flight = false;
+			if (flightErrors) {
+				errors.flight = flightErrors[0].errorInfo.summary;
+				this.setState({
+					spinners: spinners,
+					errors: errors
+				});
+				return;
+			}
 
 			this.setState({
-				activeSpinner: false,
-				flight: {
-					offers: flightData['offers'][0],
-					legs: flightData['legs'][0]
-				},
-				hotels: hotelData['hotelList'].splice(0, RESULTS_LIMIT),
-				cars: carRental['CarInfoList']['CarInfo'].splice(0, RESULTS_LIMIT)
+				spinners: spinners,
+				flights: {
+					offers: flightData['offers'],
+					legs: flightData['legs']
+				}
 			});
-		}).catch((error) => {
-			console.error(error.message);
+		}).catch(() => {
+			spinners.flight = false;
 			this.setState({
-				activeSpinner: false
+				spinners: spinners
 			});
 		});
+
+		getHotelInfo(startDate, endDate).then((response) => {
+			let hotelData = response.data;
+			let availableHotelCount = response.data.availableHotelCount;
+			spinners.hotel = false;
+
+			if (!availableHotelCount) {
+				errors.hotel = 'No available hotels for such date';
+				this.setState({
+					spinners: spinners,
+					errors: errors
+				});
+				return;
+			}
+
+			this.setState({
+				spinners: spinners,
+				hotels: hotelData['hotelList'].splice(0, RESULTS_LIMIT)
+			});
+		}).catch(() => {
+			spinners.hotel = false;
+			this.setState({
+				spinners: spinners
+			});
+		});
+
+		getCarRental(startDate, endDate).then((response) => {
+			spinners.car = false;
+			this.setState({
+				spinners: spinners,
+				cars: response.data['CarInfoList']['CarInfo'].splice(0, RESULTS_LIMIT)
+			});
+		}).catch((error) => {
+			spinners.car = false;
+			errors.car = error.response.data && error.response.data.Details || 'No available cars';
+			this.setState({
+				spinners: spinners,
+				errors: errors
+			});
+		});
+		// return Promise.all([getFlightAir(startDate), getHotelInfo(startDate, endDate), getCarRental(startDate, endDate)])
+		// 	.then((responses) => {
+		// 		let flightData = responses[0].data;
+		// 		let hotelData = responses[1].data;
+		// 		let carRental = responses[2].data;
+		//
+		// 		this.setState({
+		// 			activeSpinner: false,
+		// 			flight: {
+		// 				offers: flightData['offers'][0],
+		// 				legs: flightData['legs'][0]
+		// 			},
+		// 			hotels: hotelData['hotelList'].splice(0, RESULTS_LIMIT),
+		// 			cars: carRental['CarInfoList']['CarInfo'].splice(0, RESULTS_LIMIT)
+		// 	});
+		// }).catch((error) => {
+		// 	console.error(error.message);
+		// 	this.setState({
+		// 		activeSpinner: false
+		// 	});
+		// });
 	};
 
 	goToMapDetails(country, city, street) {
@@ -88,68 +171,71 @@ class Details extends Component {
 	}
 
 	renderFlightDetails() {
-		const {flight} = this.state;
-		const details = flight.legs.segments[0];
-		const offer = flight.offers;
+		const {flights, spinners, errors} = this.state;
 
 		return (
 			<div class={classNames(style['row'], STYLE['mrg-t-50'])}>
 				<EventWidget title={'Flight Ticket'}>
+					{spinners.flight && <Spinner />}
+					{errors.flight && <span class={STYLE['error-msg']}>{errors.flight}</span>}
 					<div class={style['widget-details']}>
-						<div class={style['widget-item']}>
-							<div class={style['coll-l']}>
-								<div class={style['item-row']}>
-									<i class="fa fa-clock-o" aria-hidden="true" />
-									<span>{details.departureTime + ' - ' + details.arrivalTime}</span>
-								</div>
-								<div class={style['item-row']}>
-									<i class="fa fa-plane" aria-hidden="true" />
-									<b>{`${details.departureAirportAddress.city} (${details.departureAirportCode})
-								- ${details.arrivalAirportAddress.city} (${details.arrivalAirportCode})`}</b>
-								</div>
-								<div class={style['item-row']}>
-									<div class={style['plane-details']}>
-										<span class={STYLE['mrg-r-30']}>Flight Number:
-											<span class={STYLE['value']}>{details.flightNumber}</span>
-										</span>
-										<span class={STYLE['mrg-r-30']}>Plane:
-											<span class={STYLE['value']}>{details.equipmentDescription}</span>
-										</span>
-										<span class={STYLE['mrg-r-30']}>Duration:
-											<span class={STYLE['value']}>{details.duration}</span>
-										</span>
+						{flights && flights.legs.map((detail, index) => {
+							return (
+								<div class={style['widget-item']}>
+									<div class={style['coll-l']}>
+										<div class={style['item-row']}>
+											<i class="fa fa-clock-o" aria-hidden="true"/>
+											<span>{detail.segments[0].departureTime + ' - ' + detail.segments[0].arrivalTime}</span>
+										</div>
+										<div class={style['item-row']}>
+											<i class="fa fa-plane" aria-hidden="true"/>
+											<b>{`${detail.segments[0].departureAirportAddress.city} (${detail.segments[0].departureAirportCode})
+										- ${detail.segments[0].arrivalAirportAddress.city} (${detail.segments[0].arrivalAirportCode})`}
+											</b>
+										</div>
+										<div class={style['item-row']}>
+											<div class={style['plane-details']}>
+												<span class={STYLE['mrg-r-30']}>Flight Number:
+													<span class={STYLE['value']}>{detail.segments[0].flightNumber}</span>
+												</span>
+												<span class={STYLE['mrg-r-30']}>Plane:
+													<span class={STYLE['value']}>{detail.segments[0].equipmentDescription}</span>
+												</span>
+												<span class={STYLE['mrg-r-30']}>Duration:
+													<span class={STYLE['value']}>{detail.segments[0].duration}</span>
+												</span>
+											</div>
+										</div>
 									</div>
-								</div>
-							</div>
-							<div class={style['coll-r']}>
-								<div class={style['item-row']}>
-									<span class={style['price']}>{offer.totalFarePrice.formattedPrice}</span>
-									<div class={STYLE['pd-t-25']}>
-										<button class={STYLE['btn-primary']}
-											onClick={this.buyTicket.bind(this, offer.detailsUrl)}>buy a ticket</button>
+									<div class={style['coll-r']}>
+										<div class={style['item-row']}>
+											<span class={style['price']}>{flights.offers[index].totalFarePrice.formattedPrice}</span>
+											<div class={STYLE['pd-t-25']}>
+												<button class={STYLE['btn-primary']}
+													onClick={this.buyTicket.bind(this, flights.offers[index].detailsUrl)}>buy a ticket
+												</button>
+											</div>
+										</div>
 									</div>
-								</div>
-							</div>
-						</div>
+								</div>)
+						})}
 					</div>
 				</EventWidget>
 			</div>
 		)
 	}
 
-	renderImage(width = 120, height = 120, url, alt) {
-		return <img class={style['image-icon']} src={url} alt={alt} width={width} height={height} />
-	}
-
 	renderHotelDetails() {
-		const {hotels} = this.state;
+		const {hotels, spinners, errors} = this.state;
 
 		return (
 			<div class={style['row']}>
 				<EventWidget title={'Hotel Reservation'}>
+					{spinners.hotel && <Spinner />}
+					{errors.hotel && <span class={STYLE['error-msg']}>{errors.hotel}</span>}
 					<div class={style['widget-details']}>
 						{
-							hotels.map((hotel, index) => {
+							hotels && hotels.map((hotel, index) => {
 								return (
 									<div key={index} class={style['widget-item']}>
 										<div class={style['coll-l']}>
@@ -169,12 +255,13 @@ class Details extends Component {
 												<span class={style['description']}>{hotel.shortDescription}</span>
 											</div>
 											<div class={style['item-row']}>
-												{this.renderImage(120, 80, (IMAGES_TRVL + hotel.largeThumbnailUrl))}
+												<Image width={255} height={144}
+													urls={[(IMAGES_TRVL + hotel.largeThumbnailUrl).replace(/_d.jpg/, '_l.jpg')]} />
 											</div>
 										</div>
 										<div class={style['coll-r']}>
 											<span class={style['price']}>
-												{hotel.lowRateInfo.currencySymbol + hotel.lowRateInfo.strikethroughPriceToShowUsers}
+												${hotel.lowRateInfo.strikethroughPriceToShowUsers}
 											</span>
 											<div>
 												<span class={style['period']}>(avg/night)</span>
@@ -197,14 +284,16 @@ class Details extends Component {
 	}
 
 	renderCarDetails() {
-		const {cars} = this.state;
+		const {cars, spinners, errors} = this.state;
 
 		return (
 			<div class={style['row']}>
 				<EventWidget title={'Car Rental'}>
+					{spinners.car && <Spinner />}
+					{errors.car && <span class={STYLE['error-msg']}>{errors.car}</span>}
 					<div class={style['widget-details']}>
 						{
-							cars.map((car, index) => {
+							cars && cars.map((car, index) => {
 								return (
 									<div key={index} class={style['widget-item']}>
 										<div class={style['coll-l']}>
@@ -213,7 +302,8 @@ class Details extends Component {
 												<b>{car.SupplierName}</b>
 											</div>
 											<div style={{display: 'flex'}}>
-												{this.renderImage(265, 160, (car.ThumbnailUrl.replace(/_t.jpg/, '_l.jpg')))}
+												<Image width={265} height={160}
+													urls={[car.ThumbnailUrl.replace(/_t.jpg/, '_l.jpg'), car.ThumbnailUrl.replace(/_t.jpg/, '_b.jpg')]} />
 												<div class={style['car-info']}>
 													<div class={style['item-row']}>
 														<span class={style['title']}>{car.CarMakeModel} ({car.CarClass})</span>
@@ -235,7 +325,6 @@ class Details extends Component {
 												</div>
 											</div>
 										</div>
-
 										<div class={style['coll-r']}>
 											<span class={style['price']}>${car.Price.BaseRate.Value}</span>
 											<div>
@@ -283,7 +372,7 @@ class Details extends Component {
 	}
 
 	render() {
-		const {event, flight, hotels, cars, activeSpinner} = this.state;
+		const {event} = this.state;
 
 		if (!event) {
 			return false;
@@ -295,8 +384,7 @@ class Details extends Component {
 
 		return (
 			<div>
-				{activeSpinner && <Spinner />}
-				{!activeSpinner && <div>
+				{<div>
 					<div class={STYLE['app-title']}>
 						<span>TKM ORDER PACKAGING</span>
 					</div>
@@ -310,14 +398,12 @@ class Details extends Component {
 										<i class="fa fa-clock-o" aria-hidden="true" />
 										<b>{date.start.localDate + ' ' + date.start.localTime}</b>
 									</div>
-
 									<div class={style['location']}
 										onClick={this.goToMapDetails.bind(this, location.country.name, location.city.name, location.address.line1)}>
 										<i class="fa fa-map-marker" aria-hidden="true" />
 										<span>{location.country.name + ', ' + location.city.name + ' | ' + location.address.line1}</span>
 									</div>
 								</div>
-
 								<div class={style['description']}>
 									{event.info || event.pleaseNote|| 'No description of event'}
 								</div>
@@ -328,9 +414,9 @@ class Details extends Component {
 								</div>}
 							</div>
 						</div>
-						{flight && this.renderFlightDetails()}
-						{hotels && this.renderHotelDetails()}
-						{cars && this.renderCarDetails()}
+						{this.renderFlightDetails()}
+						{this.renderHotelDetails()}
+						{this.renderCarDetails()}
 					</div>
 				</div>
 				}

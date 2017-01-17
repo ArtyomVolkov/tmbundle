@@ -4,7 +4,7 @@
 import React, {Component} from 'react';
 
 // styles
-import style from './EventWidget.styl';
+import * as style from './EventWidget.styl';
 
 class EventWidget extends Component {
 	constructor(props) {

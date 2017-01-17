@@ -46,18 +46,22 @@ const style = StyleSheet.create({
 		alignItems: 'flex-start'
 	},
 	itemTitle: {
-		fontSize: 14,
+		fontSize: 16,
 		alignSelf: 'stretch',
-		color: 'black',
+		color: '#768692',
 		fontWeight: 'bold'
 	},
-	image: {
-		width: 60,
-		height: 60,
-		marginRight: 5,
+	hotelImg: {
+		width: 155,
+		height: 120,
 		borderWidth: 1,
-		borderColor: 'black',
-		borderRadius: 3
+		borderColor: '#dcdcdc'
+	},
+	image: {
+		width: 120,
+		height: 120,
+		borderWidth: 1,
+		borderColor: '#dcdcdc'
 	},
 	dateTime: {
 		fontSize: 12,
@@ -129,6 +133,14 @@ class Details extends Component {
 		});
 	}
 
+	onCheckUrl(urls) {
+		let validUrl;
+		
+		for (let i = 0; i < urls.length; i++) {
+			
+		}
+	}
+
 	renderImage(style = {}, url) {
 		return <Image style={style} source={{uri: url}} />
 	}
@@ -138,14 +150,14 @@ class Details extends Component {
 
 		for (let i = 1; i <= 5; i++) {
 			if (i < stars) {
-				starIcons.push(<Icon key={i} name="star" size={10} color="#fd9600" />);
+				starIcons.push(<Icon key={i} name="star" size={14} color="#b7c9d3" />);
 				continue;
 			}
 			if (i - stars <= 0.5) {
-				starIcons.push(<Icon key={i} name="star-half-o" size={10} color="#fd9600" />);
+				starIcons.push(<Icon key={i} name="star-half-o" size={14} color="#b7c9d3" />);
 				continue;
 			}
-			starIcons.push(<Icon key={i} name="star-o" size={10} color="#fd9600" />);
+			starIcons.push(<Icon key={i} name="star-o" size={14} color="#b7c9d3" />);
 		}
 
 		return (
@@ -163,7 +175,7 @@ class Details extends Component {
 				{
 					flight.legs.map((detail, index) => {
 						return (
-							<View key={index} style={[COMMON.row, COMMON.separator]}>
+							<View key={index} style={[COMMON.row, index < flight.length - 1 && COMMON.separator]}>
 								<View style={{flex: 1}}>
                   <View style={style.itemRow}>
                     <Icon name="clock-o" size={20} color="#b7c9d3" style={COMMON.mrgR20} />
@@ -213,27 +225,39 @@ class Details extends Component {
 				{
 					hotels.map((hotel, index) => {
 						return (
-							<View key={index} style={[COMMON.row, COMMON.separator]}>
-								<View style={COMMON.mrgR5}>
-									{this.renderImage(style.image, (IMAGES_TRVL + hotel.largeThumbnailUrl))}
-									{this.renderRate(+hotel.hotelGuestRating)}
-								</View>
+							<View key={index} style={[COMMON.row, index < hotels.length - 1 && COMMON.separator]}>
 								<View style={{flex: 1}}>
 									<View style={style.itemRow}>
-										<Text style={style.itemTitle} ellipsizeMode="middle" numberOfLines={1}>{hotel.name}</Text>
+										<Icon name="home" size={20} color="#b7c9d3" style={COMMON.mrgR20} />
+										<View style={{flex: 1}}>
+											<Text style={style.itemTitle} ellipsizeMode="middle" numberOfLines={2}>{hotel.name}</Text>
+											{this.renderRate(+hotel.hotelGuestRating)}
+										</View>
 									</View>
 									<View style={style.itemRow}>
-										<Text style={style.subTitle} ellipsizeMode="tail" numberOfLines={1}>{hotel.address}</Text>
+										<Icon name="map-marker" size={20} color="#b7c9d3" style={COMMON.mrgR20} />
+										<Text style={style.description} ellipsizeMode="tail" numberOfLines={2}>{hotel.address}</Text>
 									</View>
 									<View style={style.itemRow}>
 										<Text style={style.description} ellipsizeMode="tail" numberOfLines={2}>{hotel.shortDescription}</Text>
 									</View>
+									<View style={[style.itemRow, {justifyContent: 'space-between'}]}>
+										{this.renderImage(style.hotelImg, (IMAGES_TRVL + hotel.largeThumbnailUrl))}
+									</View>
 									<View style={style.itemRow}>
+										<Icon name="ticket" size={20} color="#b7c9d3" style={COMMON.mrgR20} />
+										<Text style={style.price}>PRICE (avg/night)</Text>
+										<Text style={COMMON.discount}>{hotel.shortDiscountMessage}</Text>
+									</View>
+									<View style={[style.itemRow, {justifyContent: 'center'}]}>
 										<Text style={COMMON.price}>
 											{hotel.lowRateInfo.currencySymbol + hotel.lowRateInfo.strikethroughPriceToShowUsers}
 										</Text>
-										<Text style={{fontSize: 12, fontWeight: 'bold'}}>(avg/night)</Text>
-										<Text style={COMMON.discount}>{hotel.shortDiscountMessage}</Text>
+									</View>
+									<View style={[style.itemRow, {justifyContent: 'center'}]}>
+										<View style={{flex: 1}}>
+											<Button title="RESERVE" type="secondary" onPress={null}/>
+										</View>
 									</View>
 								</View>
 							</View>
@@ -252,35 +276,47 @@ class Details extends Component {
 				{
 					cars.map((car, index) => {
 						return (
-							<View key={index} style={[COMMON.row, COMMON.separator]}>
-								<View>
-									{this.renderImage([style.image, {width: 85, height: 50}], ((car.ThumbnailUrl.replace(/_t.jpg/, '_s.jpg'))))}
-									<View style={[style.itemRow, {justifyContent: 'center'}]}>
-										<Icon name="user" size={12} color="black" style={COMMON.mrgR5} />
-										<Text style={[COMMON.fs12, COMMON.mrgR5]}>{car.Capacity.AdultCount}</Text>
-										<Icon name="snowflake-o" size={12} color="#00caff" style={COMMON.mrgR5} />
-										<Text style={COMMON.fs12}>{'A/C'}</Text>
-									</View>
-								</View>
+							<View key={index} style={[COMMON.row, index < cars.length - 1 && COMMON.separator]}>
 								<View style={{flex: 1}}>
 									<View style={style.itemRow}>
-										<Text style={style.itemTitle} ellipsizeMode="middle" numberOfLines={1}>
-											{car.SupplierName}
-										</Text>
+										<Icon name="car" size={20} color="#b7c9d3" style={COMMON.mrgR20} />
+										<Text style={style.itemTitle} ellipsizeMode="middle" numberOfLines={1}>{car.SupplierName}</Text>
 									</View>
 									<View style={style.itemRow}>
-										<Text style={style.subTitle} ellipsizeMode="tail" numberOfLines={1}>
+										{this.renderImage([style.image, {width: 335, height: 180}], ((car.ThumbnailUrl.replace(/_t.jpg/, '_b.jpg'))))}
+									</View>
+									<View style={style.itemRow}>
+										<Text style={style.description} ellipsizeMode="middle" numberOfLines={1}>
 											{car.CarMakeModel} ({car.CarClass})
 										</Text>
 									</View>
 									<View style={style.itemRow}>
-										<Text style={style.dateTime}>{car.PickupInfo.DateTime} - </Text>
-										<Text style={style.dateTime}>{car.DropOffInfo.DateTime}</Text>
+										<View style={{flex: 1}}>
+											<Text style={style.description}>{car.Capacity.AdultCount} doors:
+												<Text>{`${car.CarDoorCount.Min}/${car.CarDoorCount.Max}`} A/C</Text>
+											</Text>
+											<Text style={style.description}>
+												{car.TransmissionDriveCode === '1' ? 'Automatic transmission' : 'Manual transmission'}
+											</Text>
+										</View>
 									</View>
 									<View style={style.itemRow}>
+										<View style={{flex: 1}}>
+											<Text style={COMMON.text}>Pick Up: <Text style={COMMON.value}>{car.PickupInfo.DateTime}</Text></Text>
+											<Text style={COMMON.text}>Drop Off: <Text style={COMMON.value}>{car.DropOffInfo.DateTime}</Text></Text>
+										</View>
+									</View>
+									<View style={style.itemRow}>
+										<Icon name="ticket" size={20} color="#b7c9d3" style={COMMON.mrgR20} />
+										<Text style={style.price}>PRICE (per week)</Text>
+									</View>
+									<View style={[style.itemRow, {justifyContent: 'center'}]}>
 										<Text style={COMMON.price}>${car.Price.BaseRate.Value}</Text>
-										<Icon name="car" size={12} style={COMMON.mrgR5} />
-										<Text style={style.subTitle}>(per/week)</Text>
+									</View>
+									<View style={[style.itemRow, {justifyContent: 'center'}]}>
+										<View style={{flex: 1}}>
+											<Button title="RESERVE" type="secondary" onPress={null}/>
+										</View>
 									</View>
 								</View>
 							</View>

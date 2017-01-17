@@ -16,23 +16,6 @@ export function getEvents(searchTerm = '') {
 	return axios.get(EVENTS_API, {params});
 }
 
-export function getTickets() {
-	const params = {
-		departureAirport: 'LAX',
-		arrivalAirport: 'WAS',
-		departureDate: '2017-01-29',
-		maxOfferCount: STORE.getState().options.flights,
-		apikey: EXPEDIA_API_KEY
-	};
-  fetch('http://terminal2.expedia.com/x/mflights/search?departureAirport=LAX&arrivalAirport=ORD&departureDate=2017-02-08&apikey=rxrUZKoPlSKZXN4PPZQfDgOK2dMRyG7Z')
-		.then((data) => {
-  		console.log(data);
-		}).catch((error) => {
-  		console.log('*****error*****');
-  		console.log(error);
-	});
-}
-
 function getAirport(city = 'Toronto', country = 'Canada', countryCode = 'CA') {
 	const params = {
 		city: city,
@@ -47,11 +30,11 @@ function getAirport(city = 'Toronto', country = 'Canada', countryCode = 'CA') {
 	});
 }
 
-export function getFlightAir() {
+export function getFlightAir(departureDate = '2017-03-01') {
 	const params = {
 		departureAirport: 'LAX',
 		arrivalAirport: 'WAS',
-		departureDate: '2017-01-29',
+		departureDate: departureDate,
 		maxOfferCount: STORE.getState().options.flights,
 		apikey: EXPEDIA_API_KEY
 	};
@@ -59,11 +42,11 @@ export function getFlightAir() {
 	return axios.get(FLIGHT_SEARCH_API, {params});
 }
 
-export function getHotelInfo(){
+export function getHotelInfo(checkInDate, checkOutDate){
 	const params = {
 		city: 'WASHINGTON',
-		checkInDate: '2017-01-30',
-		checkOutDate: '2017-02-04',
+		checkInDate: checkInDate,
+		checkOutDate: checkOutDate,
 		room1: 2,
 		resultsPerPage: STORE.getState().options.hotels,
 		apikey: EXPEDIA_API_KEY
@@ -72,10 +55,10 @@ export function getHotelInfo(){
 	return axios.get(HOTEL_SEARCH_API, {params});
 }
 
-export function getCarRental() {
+export function getCarRental(pickupdate, dropoffdate) {
 	const params = {
-		pickupdate: '2017-01-29T19:30',
-		dropoffdate: '2017-02-04T12:00',
+		pickupdate: pickupdate,
+		dropoffdate: dropoffdate,
 		pickuplocation: 'IAD',
 		dropofflocation: 'IAD',
 		classes: 'economy',
