@@ -43,13 +43,19 @@ class Events extends Component {
 									<img src={(item.images && item.images[0].url) || 'http://kidsti.com/upload/95/small/'} alt="image item" height="140px" width="140" />
 									<div class={style['info']}>
 										<div class={style['event-name']}>{item.name}</div>
+										{readData(item, 'priceRanges.0').readable &&
+											<div class={style['event-price-range']}>
+												<span>${readData(item, 'priceRanges.0.min').value || N_A} - </span>
+												<span>${readData(item, 'priceRanges.0.max').value || N_A}</span>
+											</div>
+										}
 										<div class={style['date']}>{moment(item.dates.start.dateTime).format(DATE_DISPLAY_FORMAT)}</div>
 										<div class={style['location']}>
 											<span>
-												{readData(item, '_embedded.venues.0.country.name').value || N_A + ' | '}
+												{(readData(item, '_embedded.venues.0.country.name').value || N_A) + ' | '}
 											</span>
 											<span>
-												{readData(item, '_embedded.venues.0.city.name').value || N_A + ' | '}
+												{(readData(item, '_embedded.venues.0.city.name').value || N_A) + ' | '}
 											</span>
 											<span>
 												{readData(item, '_embedded.venues.0.address.line1').value || N_A}
