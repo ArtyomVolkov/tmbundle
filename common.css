@@ -119,7 +119,7 @@
 }
 .event-items--wnNvs .row--3JxQ3 .info--uTNfD .event-name--nOU-X {
   font-size: 36px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   font-weight: bold;
   line-height: 1.33;
   color: #414141;
@@ -129,6 +129,12 @@
   max-width: 100%;
   white-space: nowrap;
   word-wrap: break-word;
+}
+.event-items--wnNvs .row--3JxQ3 .info--uTNfD .event-price-range--3xS1i {
+  font-size: 18px;
+  font-weight: bold;
+  color: #26c135;
+  margin-bottom: 5px;
 }
 .event-items--wnNvs .row--3JxQ3 .info--uTNfD .date--3vgKQ {
   font-size: 24px;

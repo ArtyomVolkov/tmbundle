@@ -8,6 +8,8 @@ export const HOTEL_SEARCH_API = 'http://terminal2.expedia.com/x/mhotels/search';
 export const CAR_RENTAL_API = 'http://terminal2.expedia.com/x/cars/search';
 export const AIRPORT_LIST_API = 'http://openflights.org/php/apsearch.php';
 export const IMAGES_TRVL = 'https://images.trvl-media.com';
+// db api
+export const USERS = 'http://localhost:8081/api/v1/users';
 
 // Google maps
 export const GOOGLE_MAPS = 'http://maps.google.com/?q=';

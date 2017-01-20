@@ -7,6 +7,7 @@ import STORE from '../../store/index';
 
 // Actions
 import {getEvents} from '../../actions/apis';
+import {getUsers} from '../../actions/db-actions';
 
 // Components
 import Events from './../lists/Events';
@@ -34,7 +35,8 @@ class Search extends Component {
 		if (!state.searchTerm) {
 			return;
 		}
-		
+
+		getUsers();
 		STORE.dispatch({type: 'CHANGE_SEARCH_TERM', term: state.searchTerm});
 		
 		this.setState({

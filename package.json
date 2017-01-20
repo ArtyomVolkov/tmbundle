@@ -3,16 +3,21 @@
   "version": "0.0.1",
   "main": "webpack.config.js",
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start",
     "build": "webpack --progress --profile --bail",
-    "startWeb": "webpack-dev-server --port 8082 --content-base --inline --hot --host=0.0.0.0",
+    "server": "node server.js",
+    "start": "webpack-dev-server --port 8082 --content-base --inline --hot --host=0.0.0.0",
     "test": "jest"
   },
   "dependencies": {
     "axios": "^0.15.3",
     "classnames": "^2.2.5",
+    "express": "^4.14.0",
+    "express-graphql": "^0.6.1",
+    "graphql": "^0.8.2",
     "moment": "^2.17.1",
     "nib": "^1.1.2",
+    "pg": "^6.1.2",
+    "sequelize": "^3.29.0",
     "react": "15.4.1",
     "react-dom": "^15.4.1",
     "react-google-map": "^3.0.1",
