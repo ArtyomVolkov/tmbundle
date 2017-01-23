@@ -12,9 +12,10 @@ import Spinner from './../custom-components/spinner/Spinner';
 import EventWidget from './../custom-components/widgets/EventWidget';
 import Image from './../custom-components/Image/Image';
 // Actions
-import {getFlightAir, getHotelInfo, getCarRental} from '../../actions/apis';
+import {getFlightAir, getHotelInfo, getCarRental, getAirportCodeByCity} from '../../actions/apis';
 // settings
 import {RESULTS_LIMIT, IMAGES_TRVL, GOOGLE_MAPS, TRIP_DAYS, DATE_SEARCH_FORMAT} from './../../settings';
+import {readData} from './../../utils/common';
 // styles
 import * as STYLE from './../../styles/common.styl';
 import * as style from './Details.styl';
@@ -36,6 +37,7 @@ class Details extends Component {
 				hotel: null,
 				car: null
 			},
+			userCity: state.options.userCity,
 			flights: null,
 			hotels: null,
 			cars: null
@@ -53,12 +55,24 @@ class Details extends Component {
 	}
 
 	getTravelData =()=> {
-		const {event, spinners, errors} = this.state;
+		const {event, userCity} = this.state;
 		const eventDate = event.dates.start.localDate;
 		const startDate = moment(eventDate).format(DATE_SEARCH_FORMAT);
 		const endDate = moment(+moment(eventDate) + (TRIP_DAYS * 24*60*60*1000)).format(DATE_SEARCH_FORMAT);
 
-		getFlightAir(startDate).then((response) => {
+		getAirportCodeByCity(event['_embedded'].venues[0].city.name).then((response) => {
+			let arrivalCity = {
+				name: readData(response.data, 'data.cities.0.name').value || 'WASHINGTON',
+				airportCode: readData(response.data, 'data.cities.0.airportCode').value || 'WAS'
+			};
+			this.fetchTravelData(startDate, endDate, userCity.airportCode, arrivalCity);
+		});
+	};
+
+	fetchTravelData =(startDate, endDate, departureAirport, arrivalCity) => {
+		const {spinners, errors} = this.state;
+
+		getFlightAir(startDate, departureAirport, arrivalCity.airportCode).then((response) => {
 			let flightData = response.data;
 			let flightErrors = response.data.errors;
 
@@ -86,7 +100,7 @@ class Details extends Component {
 			});
 		});
 
-		getHotelInfo(startDate, endDate).then((response) => {
+		getHotelInfo(startDate, endDate, arrivalCity.name).then((response) => {
 			let hotelData = response.data;
 			let availableHotelCount = response.data.availableHotelCount;
 			spinners.hotel = false;
@@ -111,7 +125,7 @@ class Details extends Component {
 			});
 		});
 
-		getCarRental(startDate, endDate).then((response) => {
+		getCarRental(startDate, endDate, departureAirport, arrivalCity.airportCode).then((response) => {
 			spinners.car = false;
 			this.setState({
 				spinners: spinners,
@@ -125,27 +139,6 @@ class Details extends Component {
 				errors: errors
 			});
 		});
-		// return Promise.all([getFlightAir(startDate), getHotelInfo(startDate, endDate), getCarRental(startDate, endDate)])
-		// 	.then((responses) => {
-		// 		let flightData = responses[0].data;
-		// 		let hotelData = responses[1].data;
-		// 		let carRental = responses[2].data;
-		//
-		// 		this.setState({
-		// 			activeSpinner: false,
-		// 			flight: {
-		// 				offers: flightData['offers'][0],
-		// 				legs: flightData['legs'][0]
-		// 			},
-		// 			hotels: hotelData['hotelList'].splice(0, RESULTS_LIMIT),
-		// 			cars: carRental['CarInfoList']['CarInfo'].splice(0, RESULTS_LIMIT)
-		// 	});
-		// }).catch((error) => {
-		// 	console.error(error.message);
-		// 	this.setState({
-		// 		activeSpinner: false
-		// 	});
-		// });
 	};
 
 	goToMapDetails(country, city, street) {

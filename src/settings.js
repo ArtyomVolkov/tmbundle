@@ -10,6 +10,8 @@ export const AIRPORT_LIST_API = 'http://openflights.org/php/apsearch.php';
 export const IMAGES_TRVL = 'https://images.trvl-media.com';
 // db api
 export const USERS = 'http://localhost:8081/api/v1/users';
+//graphQL API
+export const GRAPH_QL_API = 'http://localhost:8081/api/v1/tkm';
 
 // Google maps
 export const GOOGLE_MAPS = 'http://maps.google.com/?q=';
@@ -26,6 +28,7 @@ export const FLIGHT_TICKETS = 2;
 export const HOTEL_RESULTS = 3;
 export const RENTAL_CARS = 3;
 export const N_A = 'N/A';
+export const USER_CITY = 'Los Angeles';
 
 // Date formats
 export const DATE_SEARCH_FORMAT = 'YYYY-MM-DD';

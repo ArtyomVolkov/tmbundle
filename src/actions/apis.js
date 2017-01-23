@@ -3,7 +3,7 @@
  */
 import * as axios from 'axios';
 import {EVENTS_API, API_KEY, FLIGHT_SEARCH_API, AIRPORT_LIST_API,
-	EXPEDIA_API_KEY, HOTEL_SEARCH_API, CAR_RENTAL_API} from './../settings';
+	EXPEDIA_API_KEY, HOTEL_SEARCH_API, CAR_RENTAL_API, GRAPH_QL_API} from './../settings';
 import STORE from '../store/index';
 
 export function getEvents(searchTerm = '') {
@@ -16,24 +16,17 @@ export function getEvents(searchTerm = '') {
 	return axios.get(EVENTS_API, {params});
 }
 
-function getAirport(city = 'Toronto', country = 'Canada', countryCode = 'CA') {
-	const params = {
-		city: city,
-		country: country,
-		countryCode: countryCode
+export function getAirportCodeByCity(name = 'Los Angeles') {
+	let params = {
+		query: `{cities(name: "${name}") {name airportCode latitude longitude}}`
 	};
-
-	return axios.post(AIRPORT_LIST_API, {
-		//headers: {'Access-Control-Allow-Origin': '*'},
-		withCredentials: true,
-		data: params
-	});
+	return axios.get(GRAPH_QL_API, {params});
 }
 
-export function getFlightAir(departureDate = '2017-03-01') {
+export function getFlightAir(departureDate, departureAirport, arrivalAirport) {
 	const params = {
-		departureAirport: 'LAX',
-		arrivalAirport: 'WAS',
+		departureAirport: departureAirport,
+		arrivalAirport: arrivalAirport,
 		departureDate: departureDate,
 		maxOfferCount: STORE.getState().options.flights,
 		apikey: EXPEDIA_API_KEY
@@ -42,9 +35,9 @@ export function getFlightAir(departureDate = '2017-03-01') {
 	return axios.get(FLIGHT_SEARCH_API, {params});
 }
 
-export function getHotelInfo(checkInDate, checkOutDate){
+export function getHotelInfo(checkInDate, checkOutDate, city){
 	const params = {
-		city: 'WASHINGTON',
+		city: city,
 		checkInDate: checkInDate,
 		checkOutDate: checkOutDate,
 		room1: 2,
@@ -55,12 +48,12 @@ export function getHotelInfo(checkInDate, checkOutDate){
 	return axios.get(HOTEL_SEARCH_API, {params});
 }
 
-export function getCarRental(pickupdate, dropoffdate) {
+export function getCarRental(pickupdate, dropoffdate, arrivalAirport) {
 	const params = {
 		pickupdate: pickupdate,
 		dropoffdate: dropoffdate,
-		pickuplocation: 'IAD',
-		dropofflocation: 'IAD',
+		pickuplocation: arrivalAirport,
+		dropofflocation: arrivalAirport,
 		classes: 'economy',
 		sort: 'price',
 		limit: STORE.getState().options.cars,

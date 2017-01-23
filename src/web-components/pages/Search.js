@@ -6,8 +6,11 @@ import React, {Component} from 'react';
 import STORE from '../../store/index';
 
 // Actions
-import {getEvents} from '../../actions/apis';
+import {getEvents, getAirportCodeByCity} from '../../actions/apis';
 import {getUsers} from '../../actions/db-actions';
+
+// settings
+import {USER_CITY} from './../../settings';
 
 // Components
 import Events from './../lists/Events';
@@ -27,6 +30,19 @@ class Search extends Component {
 			activeSpinner: false,
 			items: state.eventList
 		};
+
+		if (!state.options.userCity) {
+			this.getUserLocation();
+		}
+	}
+
+	getUserLocation() {
+		getAirportCodeByCity(USER_CITY).then((response) => {
+			STORE.dispatch({type: 'SET_USER_CITY', userCity: {
+				cityName: USER_CITY,
+				airportCode: response['data'].data.cities[0].airportCode
+			}});
+		});
 	}
 
 	onSearchEvent =()=> {
@@ -35,8 +51,7 @@ class Search extends Component {
 		if (!state.searchTerm) {
 			return;
 		}
-
-		getUsers();
+		
 		STORE.dispatch({type: 'CHANGE_SEARCH_TERM', term: state.searchTerm});
 		
 		this.setState({

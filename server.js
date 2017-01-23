@@ -1,6 +1,7 @@
 const express = require('express');
+const cors = require('cors');
 const graphql = require('graphql');
-var GraphHTTP = require('express-graphql');
+const GraphHTTP = require('express-graphql');
 var Schema = require('./schema');
 const router = express.Router();
 const pg = require('pg');
@@ -14,23 +15,26 @@ const DB_CONFIG = {
 	idleTimeoutMillis: 20000
 };
 
+const pool = new pg.Pool(DB_CONFIG);
 const App = express();
+
+App.use(cors());
 App.use('/', router);
+App.use('/api/v1/tkm', GraphHTTP({
+	schema: Schema,
+	pretty: true,
+	graphiql: true
+}));
+
 App.listen(8081, function () {
 	console.log('****** Server is listening on 8081 port ******');
 });
-
-const pool = new pg.Pool(DB_CONFIG);
 
 /*
  * Routes
  */
 // Get users
 router.get('/api/v1/users', (req, res) => {
-
-	res.header("Access-Control-Allow-Origin", "*");
-	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-
 	pool.connect((err, db, done) => {
 		if (err) {
 			done();
@@ -54,17 +58,3 @@ router.get('/api/v1/users', (req, res) => {
 	});
 });
 
-
-// config
-var APP_PORT = 3000;
-var app = express();
-
-app.use('/graphql', GraphHTTP({
-	schema: Schema,
-	pretty: true,
-	graphiql: true
-}));
-
-app.listen(3000, ()=> {
-	console.log(`App listening on port: ${APP_PORT}`);
-});

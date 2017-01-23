@@ -4,6 +4,7 @@
 // store
 import STORE from '../store/index';
 // Action Types
+export const SET_USER_CITY = 'SET_USER_CITY';
 export const CHANGE_EVENT_ITEMS = 'CHANGE_EVENT_ITEMS';
 export const CHANGE_FLIGHT_TICKETS = 'CHANGE_FLIGHT_TICKETS';
 export const CHANGE_HOTEL_RESULTS = 'CHANGE_HOTEL_RESULTS';
