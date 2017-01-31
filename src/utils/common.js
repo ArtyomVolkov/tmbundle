@@ -33,3 +33,24 @@ export function readData(obj, path, Type = String) {
 	data.value = parent;
 	return data;
 }
+
+export function checkImageURL(url, timeout) {
+	return new Promise((resolve, reject) => {
+		const TIME_OUT = timeout || 1000;
+		let timer, img = new Image();
+
+		img.onerror = img.onabort =()=> {
+			clearTimeout(timer);
+		};
+
+		img.onload = ()=> {
+			clearTimeout(timer);
+			resolve(url);
+		};
+
+		timer = setTimeout(()=> {
+			reject("timeout");
+		}, TIME_OUT);
+		img.src = url;
+	});
+}

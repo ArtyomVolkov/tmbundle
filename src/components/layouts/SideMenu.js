@@ -15,10 +15,11 @@ const style = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'flex-start',
 		alignItems: 'center',
-		margin: 5
+		marginTop: 15
 	},
 	title: {
-		textAlign: 'right'
+		textAlign: 'right',
+		marginRight: 5
 	},
 	resetBtn: {
 		maxWidth: 80
@@ -34,8 +35,8 @@ class SubMenu extends Component {
 	static defaultProps = {
 		events: 20,
 		eventItems: 20,
-		flights: 1,
-		flightItems: 1,
+		flights: 2,
+		flightItems: 2,
 		hotels: 3,
 		hotelItems: 3,
 		cars: 3,
@@ -66,8 +67,8 @@ class SubMenu extends Component {
 		this.setState({
 			events: 20,
 			eventItems: 20,
-			flights: 1,
-			flightItems: 1,
+			flights: 2,
+			flightItems: 2,
 			hotels: 3,
 			hotelItems: 3,
 			cars: 3,

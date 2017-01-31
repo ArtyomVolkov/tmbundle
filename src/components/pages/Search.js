@@ -2,10 +2,13 @@
  * Created by Artem_Volkov on 20-Dec-16.
  */
 import React, {Component} from 'react';
-import {View, Text, ScrollView, TextInput, Button, Alert,
+import {View, Text, ScrollView, TextInput, Alert,
 	ListView, TouchableHighlight, ToolbarAndroid, Image, Keyboard, ActivityIndicator, StyleSheet} from 'react-native';
 import { Actions } from 'react-native-router-flux';
 import Spinner from 'react-native-loading-spinner-overlay';
+
+// components
+import Button from './../custom/buttons/Button';
 
 // utilities
 import {readData} from './../../utils/common';
@@ -13,13 +16,16 @@ import {N_A} from './../../settings';
 
 // store
 import STORE from './../../store/index';
+
 // Actions
 import {getEvents} from '../../actions/apis';
+
 // Styles
 import COMMON from './../../mobileStyles/common';
 const style = StyleSheet.create({
 	body: {
 		backgroundColor: '#F6F6F6',
+		padding: 15,
 		flex: 1
 	},
 	scrollView: {
@@ -30,33 +36,47 @@ const style = StyleSheet.create({
 	input: {
 		height: 45,
 		borderWidth: 1,
+    padding: 5,
 		borderColor: '#b3b3b3',
+		marginBottom: 20,
 		borderRadius: 3
 	},
 	img: {
-		width: 60,
-		height: 60,
+		width: 80,
+		height: 80,
 		borderWidth: 1,
-		borderColor: 'black',
-		borderRadius: 2
+		borderColor: '#dcdcdc'
 	},
 	searchBar: {
 		flexDirection: 'row',
 		justifyContent: 'center',
-		marginTop: 55,
-		borderBottomColor: '#b3b3b3',
+		alignItems: 'center',
+		marginTop: 65
+	},
+  itemsTab: {
+		marginTop: 20,
+    flexDirection: 'row',
 		borderBottomWidth: 1,
-		borderStyle: 'solid'
+		borderBottomColor: '#b7c9d3'
+	},
+	itemsTabText: {
+    color: '#b7c9d3',
+		fontWeight: 'bold'
+	},
+	details: {
+		fontSize: 14,
+		color: '#414141'
+	},
+	itemsTabValue: {
+		marginLeft: 5,
+		fontWeight: 'bold',
+		color: '#768692'
 	},
 	spinner: {
 		height: 80,
 		alignItems: 'center',
 		justifyContent: 'center',
 		padding: 8
-	},
-	dateTime: {
-		fontSize: 12,
-		fontWeight: 'bold'
 	}
 });
 
@@ -80,24 +100,24 @@ class Page extends Component {
 					key={index}
 					onPress={this.goToDetails.bind(this, item)}>
 					<View style={[COMMON.row, COMMON.separator]}>
-						<View style={{marginRight: 5}}>
+						<View style={{marginRight: 10}}>
 							<Image style={style.img} source={{uri: item.images[0].url}} />
 						</View>
 						<View style={{flex: 1}}>
 							<View style={COMMON.itemRow}>
-								<Text ellipsizeMode='tail' numberOfLines={1} style={COMMON.title}>
+								<Text ellipsizeMode='tail' numberOfLines={2} style={COMMON.title}>
 									{item.name}
 								</Text>
 							</View>
 							<View style={COMMON.itemRow}>
 								<Text style={COMMON.subTitle}>
-									{readData(item, '_embedded.venues.0.country.name', String).value || N_A}
+                  {readData(item, 'dates.start.localDate', String).value + ' '
+                  + readData(item, 'dates.start.localTime', String).value}
 								</Text>
 							</View>
 							<View style={COMMON.itemRow}>
-								<Text style={style.dateTime}>
-									{readData(item, 'dates.start.localDate', String).value + ' '
-									+ readData(item, 'dates.start.localTime', String).value}
+								<Text ellipsizeMode='tail' numberOfLines={3} style={style.details}>
+                  {item.info || item.pleaseNote|| 'No description of event'}
 								</Text>
 							</View>
 						</View>
@@ -162,19 +182,24 @@ class Page extends Component {
 		return (
 			<View style={style.body}>
 				<View style={style.searchBar}>
-					<View style={{flex: 0.5, padding: 5}}>
+					<View style={{flex: 1}}>
 						<TextInput style={style.input}
 						 editable={true}
 						 onChangeText={this.onChangeInputSearch}/>
-					</View>
-					<View style={{flex: 0.25, paddingTop: 10, paddingRight: 5}}>
 						<Button onPress={this.onSearchEvent}
-							title={'search'}
+							title={'SEARCH EVENT'}
 							accessibilityLabel="Ok"
 						/>
 					</View>
 					<Spinner visible={state.activeSpinner} />
 				</View>
+				{
+          state.items.length > 0 &&
+					<View style={style.itemsTab}>
+						<Text style={style.itemsTabText}>EVENT LIST</Text>
+						<Text style={style.itemsTabValue}>{state.items.length} events</Text>
+					</View>
+				}
 				<ScrollView style={style.scrollView} ref={ref => this.listView = ref}>
 					{this.renderItems()}
 				</ScrollView>
