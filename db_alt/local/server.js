@@ -6,13 +6,12 @@ var Schema = require('./schema');
 const router = express.Router();
 const pg = require('pg');
 const DB_CONFIG = {
-	user: 'wqrmhfnwrignzc',
-	database: 'd8vhfur6n1bseb',
-	password: '5aa82081405e7fe5fe119ec19efe91b739605995f59aa75a940a59d28f1ecc49',
-	host: 'ec2-54-243-38-139.compute-1.amazonaws.com',
+	user: 'postgres',
+	database: 'tkm',
+	password: 'postgres',
+	host: 'localhost',
 	port: 5432,
 	max: 10,
-    ssl: true,
 	idleTimeoutMillis: 20000
 };
 
@@ -55,10 +54,6 @@ router.get('/api/v1/users', (req, res) => {
 
 	pool.on('error', (err) => {
 		console.error('idle client error', err.message, err.stack);
-        
-        
-        
-        
 		return res.status(500).json({success: false, data: err});
 	});
 });

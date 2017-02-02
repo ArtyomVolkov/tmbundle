@@ -55,10 +55,6 @@ router.get('/api/v1/users', (req, res) => {
 
 	pool.on('error', (err) => {
 		console.error('idle client error', err.message, err.stack);
-        
-        
-        
-        
 		return res.status(500).json({success: false, data: err});
 	});
 });

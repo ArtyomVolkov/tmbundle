@@ -6,7 +6,7 @@ import React, {Component} from 'react';
 import STORE from '../../store/index';
 
 // Actions
-import {getEvents, getAirportCodeByCity} from '../../actions/apis';
+import {getEvents, getEventsAlt, getAirportCodeByCity} from '../../actions/apis';
 import {getUsers} from '../../actions/db-actions';
 
 // settings
@@ -80,6 +80,41 @@ class Search extends Component {
 		});
 	};
 
+    onSearchEventAlt =()=> {
+		const {state} = this;
+
+		if (!state.searchTerm) {
+			return;
+		}
+		
+		STORE.dispatch({type: 'CHANGE_SEARCH_TERM', term: state.searchTerm});
+		
+		this.setState({
+			activeSpinner: true
+		});
+
+		getEventsAlt(state.searchTerm).then((response) => {
+			if (!response.data.events.page.totalElements) {
+				this.setState({
+					activeSpinner: false
+				});
+				alert('No events with such name!');
+				return;
+			}
+
+			STORE.dispatch({type: 'GET_EVENT_LIST', items: response.data.events['_embedded'].events});
+			this.setState({
+				items: response.data.events['_embedded'].events,
+				activeSpinner: false
+			});
+		}).catch((error) => {
+			this.setState({
+				activeSpinner: false
+			});
+			alert(error.message || 'Internal server error');
+		});
+	};
+
 	onChangeSearchTerm =(e)=> {
 		this.state.searchTerm = e.target.value;
 	};
@@ -99,8 +134,14 @@ class Search extends Component {
 							<input type="text" placeholder="Search" onChange={this.onChangeSearchTerm} defaultValue={state.searchTerm} />
 						</div>
 						<div class={style['search-btn']}>
+							<button class={STYLE['btn-primary']} onClick={this.onSearchEventAlt} placeholder="Input search event">
+								NLP search
+							</button>
+						</div>
+                        <br/>
+                        <div class={style['search-btn']}>
 							<button class={STYLE['btn-primary']} onClick={this.onSearchEvent} placeholder="Input search event">
-								Search Event
+								Simple search
 							</button>
 						</div>
 					</div>
