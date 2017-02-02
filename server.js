@@ -26,10 +26,13 @@ App.use('/api/v1/tkm', GraphHTTP({
 	pretty: true,
 	graphiql: true
 }));
+App.set('port', (process.env.PORT || 5000));
 
-App.listen(8081, function () {
-	console.log('****** Server is listening on 8081 port ******');
-});
+App.listen(app.get('port'), function() {
+  console.log('Node app is running on port', app.get('port'));
+}).on('error', function(err) { console.log('Node app error' + err); });
+
+
 
 /*
  * Routes
