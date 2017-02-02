@@ -14,9 +14,12 @@ export const CAR_RENTAL_API = 'https://degratnik-prod.apigee.net/expedia-tmbundl
 export const AIRPORT_LIST_API = 'http://openflights.org/php/apsearch.php';
 export const IMAGES_TRVL = 'https://images.trvl-media.com';
 // db api
-export const USERS = 'http://localhost:8081/api/v1/users';
+//export const USERS = 'http://localhost:8081/api/v1/users';
+export const USERS = 'https://tmbundle.herokuapp.com/api/v1/users';
 //graphQL API
-export const GRAPH_QL_API = 'http://localhost:8081/api/v1/tkm';
+//export const GRAPH_QL_API = 'http://localhost:8081/api/v1/tkm';
+export const GRAPH_QL_API = 'https://tmbundle.herokuapp.com/api/v1/tkm';
+
 
 // Google maps
 export const GOOGLE_MAPS = 'http://maps.google.com/?q=';
