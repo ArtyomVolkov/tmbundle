@@ -28,8 +28,8 @@ App.use('/api/v1/tkm', GraphHTTP({
 }));
 App.set('port', (process.env.PORT || 5000));
 
-App.listen(app.get('port'), function() {
-  console.log('Node app is running on port', app.get('port'));
+App.listen(App.get('port'), function() {
+  console.log('Node app is running on port', App.get('port'));
 }).on('error', function(err) { console.log('Node app error' + err); });
 
 
