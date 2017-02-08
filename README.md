@@ -36,6 +36,7 @@ It will start a local server using `webpack-dev-server` which will watch, build 
 To build your application, run:
 
 * Run android simulator
+* `cd android && gradlew clean` (to make clean-up build folder)
 * `react-native run-android`
 
 Export to APK file:

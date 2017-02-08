@@ -174,7 +174,7 @@ class Details extends Component {
 					<div class={style['widget-details']}>
 						{flights && flights.legs.map((detail, index) => {
 							return (
-								<div class={style['widget-item']}>
+								<div class={style['widget-item']} key={index}>
 									<div class={style['coll-l']}>
 										<div class={style['item-row']}>
 											<i class="fa fa-clock-o" aria-hidden="true"/>

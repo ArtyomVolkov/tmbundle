@@ -10,7 +10,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import EventWidget from './../widgets/EventWidget';
 import Button from './../custom/buttons/Button';
 // Actions
-import {getFlightAir, getHotelInfo, getCarRental} from '../../actions/apis';
+import {getFlightAir, getHotelInfo, getCarRental, getAirportCodeByCity} from '../../actions/apis';
 import STORE from './../../store/index';
 // settings
 import {IMAGES_TRVL, N_A, DATE_SEARCH_FORMAT, TRIP_DAYS} from './../../settings';
@@ -96,8 +96,8 @@ class Details extends Component {
 		super(props);
 
 		const state = STORE.getState();
-
 		this.state = {
+			userCity: state.options.userCity,
 			event: state.eventDetails,
 			activeSpinner: true,
 			flight: null,
@@ -111,34 +111,50 @@ class Details extends Component {
 	}
 
 	getTravelData() {
-		const {event} = this.state;
+		const {event, userCity} = this.state;
 		const eventDate = event.dates.start.localDate;
 		const startDate = moment(eventDate).format(DATE_SEARCH_FORMAT);
 		const endDate = moment(+moment(eventDate) + (TRIP_DAYS * 24*60*60*1000)).format(DATE_SEARCH_FORMAT);
 
-		return Promise.all([getFlightAir(startDate), getHotelInfo(startDate, endDate), getCarRental(startDate, endDate)])
-			.then((responses) => {
-				let flightData = responses[0].data;
-				let hotelData = responses[1].data;
-				let carRental = responses[2].data;
-
-				this.setState({
-					activeSpinner: false,
-					flight: {
-						offers: flightData['offers'],
-						legs: flightData['legs']
-					},
-					hotels: hotelData['hotelList'],
-					cars: (carRental['CarInfoList']['CarInfo']) instanceof Array
-						? carRental['CarInfoList']['CarInfo'] : [carRental['CarInfoList']['CarInfo']]
-				});
-			}).catch((error) => {
-				Alert.alert('Error', (error.message || 'Internal server error'));
-				this.setState({
-					activeSpinner: false
-				});
-			});
+		getAirportCodeByCity(event['_embedded'].venues[0].city.name).then((response) => {
+			let arrivalCity = {
+				name: readData(response.data, 'data.cities.0.name').value || 'WASHINGTON',
+				airportCode: readData(response.data, 'data.cities.0.airportCode').value || 'WAS'
+			};
+			this.fetchTravelData(startDate, endDate, userCity.airportCode, arrivalCity);
+		});
 	}
+
+	fetchTravelData =(startDate, endDate, departureAirport, arrivalCity) => {
+		//Alert.alert('Success', (`${startDate} | ${endDate} | ${departureAirport} | ${arrivalCity.airportCode}`));
+		return Promise.all([
+			getFlightAir(startDate, departureAirport, arrivalCity.airportCode),
+			getHotelInfo(startDate, endDate, arrivalCity.name),
+			getCarRental(startDate, endDate, departureAirport, arrivalCity.airportCode)
+		]).
+		then((responses) => {
+			let flightData = responses[0].data;
+			let hotelData = responses[1].data;
+			let carRental = responses[2].data;
+
+			this.setState({
+				activeSpinner: false,
+				flight: {
+					offers: flightData['offers'],
+					legs: flightData['legs']
+				},
+				hotels: hotelData['hotelList'],
+				cars: (carRental['CarInfoList']['CarInfo']) instanceof Array
+					? carRental['CarInfoList']['CarInfo'] : [carRental['CarInfoList']['CarInfo']]
+			});
+		}).
+		catch((error) => {
+			Alert.alert('Error', (error.message || 'Internal server error'));
+			this.setState({
+				activeSpinner: false
+			});
+		});
+	};
 
 	renderImage(style = {}, url) {
 		return <Image style={style} source={{uri: url}} />

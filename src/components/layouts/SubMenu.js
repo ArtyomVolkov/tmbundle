@@ -20,7 +20,7 @@ const drawerStyles = {
 	main: {paddingLeft: 0}
 };
 
-class StatusModal extends Component {
+class SubMenu extends Component {
 	constructor(props) {
 		super(props);
 	}
@@ -62,4 +62,4 @@ class StatusModal extends Component {
 	}
 }
 
-export default StatusModal;
+export default SubMenu;

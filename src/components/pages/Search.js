@@ -12,16 +12,13 @@ import Button from './../custom/buttons/Button';
 
 // utilities
 import {readData} from './../../utils/common';
-import {N_A} from './../../settings';
+import {USER_CITY} from './../../settings';
 
 // store
 import STORE from './../../store/index';
 
 // Actions
-import {getEvents} from '../../actions/apis';
-
-// Actions
-import {getEventsAlt} from '../../actions/apis';
+import {getEvents, getEventsAlt, getAirportCodeByCity} from '../../actions/apis';
 
 // Styles
 import COMMON from './../../mobileStyles/common';
@@ -43,6 +40,17 @@ const style = StyleSheet.create({
 		borderColor: '#b3b3b3',
 		marginBottom: 20,
 		borderRadius: 3
+	},
+	btnBar: {
+		alignItems: 'center',
+		flexDirection: 'row'
+	},
+	btnL: {
+		flex: 0.5,
+		marginRight: 10
+	},
+	btnR: {
+		flex: 0.5
 	},
 	img: {
 		width: 80,
@@ -83,15 +91,29 @@ const style = StyleSheet.create({
 	}
 });
 
-class Page extends Component {
+class Search extends Component {
 	constructor(props) {
 		super(props);
 		// array with empty items
+		const state = STORE.getState();
 		this.state = {
 			searchTerm: '',
 			activeSpinner: false,
 			items: []
 		};
+
+		if (!state.options.userCity) {
+			this.getUserLocation();
+		}
+	}
+
+	getUserLocation() {
+		getAirportCodeByCity(USER_CITY).then((response) => {
+			STORE.dispatch({type: 'SET_USER_CITY', userCity: {
+				cityName: USER_CITY,
+				airportCode: response['data'].data.cities[0].airportCode
+			}});
+		});
 	}
 
 	renderItems =()=> {
@@ -228,19 +250,24 @@ class Page extends Component {
 					<View style={{flex: 1}}>
 						<TextInput style={style.input}
 						 editable={true}
-						 onChangeText={this.onChangeInputSearch}/>
+						 onChangeText={this.onChangeInputSearch} />
+					</View>
+				</View>
+				<View style={style.btnBar}>
+					<View style={style.btnL}>
 						<Button onPress={this.onSearchEventAlt}
 							title={'NLP SEARCH'}
 							accessibilityLabel="Ok"
 						/>
-                        <br/>
-                        <Button onPress={this.onSearchEvent}
+					</View>
+					<View style={style.btnR}>
+						<Button onPress={this.onSearchEvent}
 							title={'SIMPLE SEARCH'}
 							accessibilityLabel="Ok"
 						/>
 					</View>
-					<Spinner visible={state.activeSpinner} />
 				</View>
+				<Spinner visible={state.activeSpinner} />
 				{
           state.items.length > 0 &&
 					<View style={style.itemsTab}>
@@ -256,4 +283,4 @@ class Page extends Component {
 	}
 }
 
-export default Page;
+export default Search;

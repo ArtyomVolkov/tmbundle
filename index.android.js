@@ -15,7 +15,7 @@ import SubMenu from './src/components/layouts/SubMenu';
 // styles
 import COMMON from './src/mobileStyles/common';
 
-export default class TkmOP extends Component {
+export default class TkmOp extends Component {
 
   render() {
     return (
@@ -36,4 +36,4 @@ export default class TkmOP extends Component {
   }
 }
 
-AppRegistry.registerComponent('TKM-OP', () => TkmOP);
+AppRegistry.registerComponent('TkmOp', () => TkmOp);
