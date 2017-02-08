@@ -2,7 +2,7 @@
  * Created by Artem_Volkov on 20-Dec-16.
  */
 import * as axios from 'axios';
-import {EVENTS_API, API_KEY, FLIGHT_SEARCH_API, AIRPORT_LIST_API,
+import {EVENTS_API, EVENTS_API_ALT, API_KEY, FLIGHT_SEARCH_API, AIRPORT_LIST_API,
 	EXPEDIA_API_KEY, HOTEL_SEARCH_API, CAR_RENTAL_API, GRAPH_QL_API} from './../settings';
 import STORE from '../store/index';
 
@@ -14,6 +14,15 @@ export function getEvents(searchTerm = '') {
 	};
 
 	return axios.get(EVENTS_API, {params});
+}
+
+export function getEventsAlt(searchTerm = '') {
+	const params = {
+		message: searchTerm,
+        full: true
+	};
+
+	return axios.get(EVENTS_API_ALT, {params});
 }
 
 export function getAirportCodeByCity(name = 'Los Angeles') {

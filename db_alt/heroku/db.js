@@ -6,9 +6,6 @@ const Conn = new Sequelize(
 	'5aa82081405e7fe5fe119ec19efe91b739605995f59aa75a940a59d28f1ecc49', // password
 	{
 		dialect: 'postgres',
-        dialectOptions: {
-            ssl: true
-          },
 		host: 'ec2-54-243-38-139.compute-1.amazonaws.com',
 		port: 5432,
 		idleTimeoutMillis: 15000

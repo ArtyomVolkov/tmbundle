@@ -20,6 +20,9 @@ import STORE from './../../store/index';
 // Actions
 import {getEvents} from '../../actions/apis';
 
+// Actions
+import {getEventsAlt} from '../../actions/apis';
+
 // Styles
 import COMMON from './../../mobileStyles/common';
 const style = StyleSheet.create({
@@ -176,6 +179,46 @@ class Page extends Component {
 		})
 	};
 
+    onSearchEventAlt =()=> {
+		const {state} = this;
+
+		if (!state.searchTerm) {
+			return;
+		}
+
+		STORE.dispatch({type: 'CHANGE_SEARCH_TERM', term: state.searchTerm});
+		Keyboard.dismiss();
+		
+		this.setState({
+			activeSpinner: true
+		});
+
+		getEventsAlt(state.searchTerm).then((response) => {
+			if (!response.data.events.page.totalElements) {
+				Alert.alert('Info', 'No events with such name!');
+				this.setState({
+					activeSpinner: false
+				});
+				return;
+			}
+
+			if (this.listView) {
+				this.listView.scrollTo({y: 0});
+			}
+
+			STORE.dispatch({type: 'GET_EVENT_LIST', items: response.data.events['_embedded'].events});
+			this.setState({
+				items: response.data.events['_embedded'].events,
+				activeSpinner: false
+			});
+		}).catch((error) => {
+			Alert.alert('Error', (error.message || 'Internal server error'));
+			this.setState({
+				activeSpinner: false
+			});
+		})
+	};
+
 	render(){
 		const {state} = this;
 
@@ -186,8 +229,13 @@ class Page extends Component {
 						<TextInput style={style.input}
 						 editable={true}
 						 onChangeText={this.onChangeInputSearch}/>
-						<Button onPress={this.onSearchEvent}
-							title={'SEARCH EVENT'}
+						<Button onPress={this.onSearchEventAlt}
+							title={'NLP SEARCH'}
+							accessibilityLabel="Ok"
+						/>
+                        <br/>
+                        <Button onPress={this.onSearchEvent}
+							title={'SIMPLE SEARCH'}
 							accessibilityLabel="Ok"
 						/>
 					</View>

@@ -26,13 +26,10 @@ App.use('/api/v1/tkm', GraphHTTP({
 	pretty: true,
 	graphiql: true
 }));
-App.set('port', (process.env.PORT || 5000));
 
-App.listen(App.get('port'), function() {
-  console.log('Node app is running on port', App.get('port'));
-}).on('error', function(err) { console.log('Node app error' + err); });
-
-
+App.listen(8081, function () {
+	console.log('****** Server is listening on 8081 port ******');
+});
 
 /*
  * Routes
@@ -58,10 +55,6 @@ router.get('/api/v1/users', (req, res) => {
 
 	pool.on('error', (err) => {
 		console.error('idle client error', err.message, err.stack);
-        
-        
-        
-        
 		return res.status(500).json({success: false, data: err});
 	});
 });
