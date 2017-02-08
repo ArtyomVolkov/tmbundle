@@ -3,7 +3,7 @@
  */
 import {render} from 'react-dom';
 import React, {Component} from 'react';
-import {Provider} from 'react-redux'
+import {Provider} from 'react-redux';
 import {Router, Route, Redirect, IndexRedirect, hashHistory} from 'react-router';
 import STORE from './store/index';
 
