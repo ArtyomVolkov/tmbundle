@@ -23,6 +23,7 @@
 
     .search-btn
       display flex
+      margin-left: 5px
       flex 0.1
 
 .row
@@ -30,3 +31,15 @@
   align-self stretch
   padding 10px
   border-bottom 1px solid #dcdcdc
+
+.search-results
+  display flex
+
+  .nlp-search, .simple-search
+    display flex
+    flex-direction column
+    width 50%
+
+  .simple-search
+    margin-left 20px
+    width calc(50% - 20px)

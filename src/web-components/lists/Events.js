@@ -23,7 +23,7 @@ class Events extends Component {
 	}
 
 	render() {
-		const {items} = this.props;
+		const {items, title} = this.props;
 
 		if (!items.length) {
 			return false;
@@ -32,7 +32,7 @@ class Events extends Component {
 		return (
 			<div class={style['event-items']}>
 				<div class={style['items-bar']}>
-					<span class={style['list']}>event list</span>
+					<span class={style['list']}>{title || 'event list'}</span>
 					<span class={style['count']}>{items.length} events</span>
 				</div>
 				<div class={style['items']}>

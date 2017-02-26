@@ -28,7 +28,8 @@ class Search extends Component {
 		this.state = {
 			searchTerm: state.searchTerm,
 			activeSpinner: false,
-			items: state.eventList
+			events: state.eventList,
+			eventsAlt: state.eventsAltList
 		};
 
 		if (!state.options.userCity) {
@@ -57,62 +58,29 @@ class Search extends Component {
 		this.setState({
 			activeSpinner: true
 		});
-
-		getEvents(state.searchTerm).then((response) => {
-			if (!response.data.page.totalElements) {
-				this.setState({
-					activeSpinner: false
-				});
-				alert('No events with such name!');
-				return;
+		Promise.all([getEvents(state.searchTerm), getEventsAlt(state.searchTerm)])
+			.then((responses) => {
+                STORE.dispatch({
+                	type: 'GET_EVENT_LIST',
+					events: responses[0].data['_embedded'].events
+                });
+                STORE.dispatch({
+                    type: 'GET_EVENT_ALT_LIST',
+                    events: responses[1].data.events['_embedded'].events
+                });
+                this.setState({
+                    activeSpinner: false,
+					events: responses[0].data['_embedded'].events,
+					eventsAlt: responses[1].data.events['_embedded'].events,
+                });
+			})
+			.catch((error) => {
+                this.setState({
+                    activeSpinner: false,
+                });
+                alert(error.message || 'Internal server error');
 			}
-
-			STORE.dispatch({type: 'GET_EVENT_LIST', items: response.data['_embedded'].events});
-			this.setState({
-				items: response.data['_embedded'].events,
-				activeSpinner: false
-			});
-		}).catch((error) => {
-			this.setState({
-				activeSpinner: false
-			});
-			alert(error.message || 'Internal server error');
-		});
-	};
-
-    onSearchEventAlt =()=> {
-		const {state} = this;
-
-		if (!state.searchTerm) {
-			return;
-		}
-		
-		STORE.dispatch({type: 'CHANGE_SEARCH_TERM', term: state.searchTerm});
-		
-		this.setState({
-			activeSpinner: true
-		});
-
-		getEventsAlt(state.searchTerm).then((response) => {
-			if (!response.data.events.page.totalElements) {
-				this.setState({
-					activeSpinner: false
-				});
-				alert('No events with such name!');
-				return;
-			}
-
-			STORE.dispatch({type: 'GET_EVENT_LIST', items: response.data.events['_embedded'].events});
-			this.setState({
-				items: response.data.events['_embedded'].events,
-				activeSpinner: false
-			});
-		}).catch((error) => {
-			this.setState({
-				activeSpinner: false
-			});
-			alert(error.message || 'Internal server error');
-		});
+		);
 	};
 
 	onChangeSearchTerm =(e)=> {
@@ -131,22 +99,26 @@ class Search extends Component {
 					</div>
 					<div class={style['search-row']}>
 						<div class={style['input-search']}>
-							<input type="text" placeholder="Search" onChange={this.onChangeSearchTerm} defaultValue={state.searchTerm} />
-						</div>
-						<div class={style['search-btn']}>
-							<button class={STYLE['btn-primary']} onClick={this.onSearchEventAlt} placeholder="Input search event">
-								NLP search
-							</button>
+							<input type="text" placeholder="Search" onChange={this.onChangeSearchTerm}
+								defaultValue={state.searchTerm} />
 						</div>
                         <br/>
                         <div class={style['search-btn']}>
-							<button class={STYLE['btn-primary']} onClick={this.onSearchEvent} placeholder="Input search event">
-								Simple search
+							<button class={STYLE['btn-primary']}
+								onClick={this.onSearchEvent}
+								placeholder="Input search event">Search all
 							</button>
 						</div>
 					</div>
 				</div>
-				<Events items={state.items} />
+				<div class={style['search-results']}>
+					<div class={style['nlp-search']}>
+						<Events items={state.eventsAlt} title='nlp event list' />
+					</div>
+					<div class={style['simple-search']}>
+						<Events items={state.events} title='default event list' />
+					</div>
+				</div>
 			</div>
 		)
 	}
